@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx prisma *)",
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(curl *)",
+      "WebSearch",
+      "PowerShell(npm cache *)",
+      "PowerShell(npm view *)",
+      "PowerShell(Set-Location *)",
+      "PowerShell(node \"C:\\\\Users\\\\Gr11zzel\\\\AppData\\\\Local\\\\Temp\\\\prisma_test.js\")",
+      "PowerShell(Set-Location -Path \"C:\\\\laragon\\\\www\\\\apotik\\\\backend\"; $env:DATABASE_URL=\"mysql://root:@localhost:3306/apotik\"; node -e \"const {PrismaClient}=require\\('@prisma/client'\\); const prisma=new PrismaClient\\(\\); prisma.$connect\\(\\).then\\(\\(\\)=>console.log\\('connected'\\)\\).catch\\(e=>console.error\\('error',e.message\\)\\).finally\\(\\(\\)=>prisma.$disconnect\\(\\)\\);\")",
+      "PowerShell(Set-Location -Path \"C:\\\\laragon\\\\www\\\\apotik\\\\backend\"; $env:DATABASE_URL=\"mysql://root:@localhost:3306/apotik\"; node -e \"const {PrismaClient}=require\\('@prisma/client'\\); const prisma=new PrismaClient\\(\\); prisma.`$connect\\(\\).then\\(\\(\\)=>console.log\\('connected'\\)\\).catch\\(e=>console.error\\('error',e.message\\)\\).finally\\(\\(\\)=>prisma.`$disconnect\\(\\)\\);\")",
+      "PowerShell(Set-Location -Path \"C:\\\\laragon\\\\www\\\\apotik\\\\backend\"; $env:DATABASE_URL=\"mysql://root:@localhost:3306/apotik\"; node -e \"const {PrismaClient}=require\\('@prisma/client'\\); const prisma=new PrismaClient\\({}\\); prisma.$connect\\(\\).then\\(\\(\\)=>console.log\\('connected'\\)\\).catch\\(e=>console.error\\('error',e.message\\)\\).finally\\(\\(\\)=>prisma.$disconnect\\(\\)\\);\")",
+      "PowerShell(Set-Location -Path \"C:\\\\laragon\\\\www\\\\apotik\\\\backend\"; $env:DATABASE_URL=\"mysql://root:@localhost:3306/apotik\"; node -e \"const {PrismaClient}=require\\('@prisma/client'\\); const prisma=new PrismaClient\\({}\\); prisma.`$connect\\(\\).then\\(\\(\\)=>console.log\\('connected'\\)\\).catch\\(e=>console.error\\('error',e.message\\)\\).finally\\(\\(\\)=>prisma.`$disconnect\\(\\)\\);\")",
+      "PowerShell(npm install *)",
+      "PowerShell(npx prisma generate)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git init *)",
+      "Bash(git branch *)",
+      "Bash(git remote *)"
+    ]
+  }
+}
