@@ -3,8 +3,16 @@ interface StatCardProps {
   value: number | string;
   change?: number;
   icon: React.ReactNode;
-  color?: 'blue' | 'green' | 'yellow' | 'red' | 'purple';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info';
 }
+
+const variantToColor: Record<string, keyof typeof colors> = {
+  default: 'blue',
+  success: 'green',
+  warning: 'yellow',
+  danger: 'red',
+  info: 'purple',
+};
 
 const colors = {
   blue: { bg: 'bg-blue-50', border: 'border-blue-100', text: 'text-blue-600', iconBg: 'bg-blue-100' },
@@ -14,8 +22,9 @@ const colors = {
   purple: { bg: 'bg-purple-50', border: 'border-purple-100', text: 'text-purple-600', iconBg: 'bg-purple-100' },
 };
 
-export default function StatCard({ title, value, change, icon, color = 'blue' }: StatCardProps) {
-  const c = colors[color];
+export default function StatCard({ title, value, change, icon, variant = 'default' }: StatCardProps) {
+  const colorKey = variantToColor[variant];
+  const c = colors[colorKey];
   return (
     <div className={`${c.bg} border ${c.border} rounded-2xl p-6 shadow-soft hover:shadow-lg transition-all duration-300`}>
       <div className="flex items-center justify-between">
