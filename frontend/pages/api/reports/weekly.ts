@@ -31,11 +31,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const end = endOfWeek(refDate);
 
   const sales = await prisma.sale.findMany({
-    where: { date: { gte: start, lte: end } },
-    select: { total: true },
+    where: { createdAt: { gte: start, lte: end } },
+    select: { totalAmount: true },
   });
   const expenses = await prisma.expense.findMany({
-    where: { date: { gte: start, lte: end } },
+    where: { createdAt: { gte: start, lte: end } },
     select: { amount: true },
   });
 

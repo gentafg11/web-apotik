@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const where = role === 'ADMIN' ? {} : { userId };
     const expenses = await prisma.expense.findMany({
       where,
-      orderBy: { date: 'desc' },
+      orderBy: { createdAt: 'desc' },
     });
     return res.status(200).json(expenses);
   }
@@ -22,17 +22,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if ('error' in authResult) return res.status(401).json({ message: authResult.error });
 
   if (req.method === 'POST') {
-    const { amount, category, description, date } = req.body;
+    const { amount, description } = req.body;
     if (amount === undefined) {
       return res.status(400).json({ message: 'Amount required' });
+    }
+    if (!description) {
+      return res.status(400).json({ message: 'Description required' });
     }
     const expense = await prisma.expense.create({
       data: {
         userId: authResult.user.id,
         amount: Number(amount),
-        category,
         description,
-        date: date ? new Date(date) : new Date(),
       },
     });
     return res.status(201).json(expense);

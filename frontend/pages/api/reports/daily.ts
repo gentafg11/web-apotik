@@ -27,13 +27,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const sales = await prisma.sale.findMany({
     where: {
-      date: { gte: start, lte: end },
+      createdAt: { gte: start, lte: end },
     },
-    select: { total: true },
+    select: { totalAmount: true },
   });
   const expenses = await prisma.expense.findMany({
     where: {
-      date: { gte: start, lte: end },
+      createdAt: { gte: start, lte: end },
     },
     select: { amount: true },
   });

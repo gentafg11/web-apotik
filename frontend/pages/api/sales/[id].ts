@@ -12,9 +12,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (authResult.user.role !== 'ADMIN') return res.status(403).json({ message: 'Forbidden' });
 
   if (req.method === 'PUT') {
-    const { items, total, paymentMethod, notes } = req.body;
-    if (!items || !total) {
-      return res.status(400).json({ message: 'Items and total required' });
+    const { items, totalAmount } = req.body;
+    if (!items || totalAmount === undefined) {
+      return res.status(400).json({ message: 'Items and totalAmount required' });
     }
 
     // Use transaction to replace items
@@ -23,13 +23,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const sale = await tx.sale.update({
         where: { id: Number(id) },
         data: {
-          total: Number(total),
-          paymentMethod,
-          notes,
+          totalAmount: Number(totalAmount),
           items: {
             create: items.map((item: any) => ({
               productId: Number(item.productId),
-              quantity: Number(item.quantity),
+              qty: Number(item.qty),
               price: Number(item.price),
             })),
           },

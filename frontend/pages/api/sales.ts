@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const sales = await prisma.sale.findMany({
       where,
       include: { items: true, user: { select: { email: true } } },
-      orderBy: { date: 'desc' },
+      orderBy: { createdAt: 'desc' },
     });
     return res.status(200).json(sales);
   }
@@ -23,20 +23,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if ('error' in authResult) return res.status(401).json({ message: authResult.error });
 
   if (req.method === 'POST') {
-    const { items, total, paymentMethod, notes } = req.body;
-    if (!items || !total) {
-      return res.status(400).json({ message: 'Items and total required' });
+    const { items, totalAmount } = req.body;
+    if (!items || totalAmount === undefined) {
+      return res.status(400).json({ message: 'Items and totalAmount required' });
     }
     const sale = await prisma.sale.create({
       data: {
         userId: authResult.user.id,
-        total: Number(total),
-        paymentMethod,
-        notes,
+        totalAmount: Number(totalAmount),
         items: {
           create: items.map((item: any) => ({
             productId: Number(item.productId),
-            quantity: Number(item.quantity),
+            qty: Number(item.qty),
             price: Number(item.price),
           })),
         },

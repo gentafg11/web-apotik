@@ -26,12 +26,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (authResult.user.role !== 'ADMIN') return res.status(403).json({ message: 'Forbidden' });
 
   if (req.method === 'PUT') {
-    const { amount, category, description, date } = req.body;
+    const { amount, description } = req.body;
     const updates: any = {};
     if (amount !== undefined) updates.amount = Number(amount);
-    if (category !== undefined) updates.category = category;
     if (description !== undefined) updates.description = description;
-    if (date !== undefined) updates.date = new Date(date);
     const expense = await prisma.expense.update({
       where: { id: Number(id) },
       data: updates,
