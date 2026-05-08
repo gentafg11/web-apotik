@@ -14,9 +14,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (authResult.user.role !== 'ADMIN') return res.status(403).json({ message: 'Forbidden' });
 
   if (req.method === 'POST') {
-    const { name, price, imageUrl, sku, cost, stock, supplierId } = req.body;
-    if (!name || price === undefined || !sku || cost === undefined || stock === undefined || supplierId === undefined) {
-      return res.status(400).json({ message: 'Missing required fields: name, price, sku, cost, stock, supplierId' });
+    const { name, price, imageUrl, sku, cost, stock } = req.body;
+    if (!name || price === undefined || !sku || cost === undefined || stock === undefined) {
+      return res.status(400).json({ message: 'Missing required fields: name, price, sku, cost, stock' });
     }
     try {
       const product = await prisma.product.create({
@@ -27,7 +27,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           sku,
           cost: Number(cost),
           stock: Number(stock),
-          supplierId: Number(supplierId),
         },
       });
       return res.status(201).json(product);

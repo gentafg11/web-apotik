@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (authResult.user.role !== 'ADMIN') return res.status(403).json({ message: 'Forbidden' });
 
   if (req.method === 'PUT') {
-    const { name, price, imageUrl, sku, cost, stock, supplierId } = req.body;
+    const { name, price, imageUrl, sku, cost, stock } = req.body;
     const updates: any = {};
     if (name) updates.name = name;
     if (price !== undefined) updates.price = Number(price);
@@ -28,7 +28,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (sku) updates.sku = sku;
     if (cost !== undefined) updates.cost = Number(cost);
     if (stock !== undefined) updates.stock = Number(stock);
-    if (supplierId !== undefined) updates.supplierId = Number(supplierId);
 
     try {
       const product = await prisma.product.update({
