@@ -4,4 +4,7 @@
 .env.local
 backend/.env
 frontend/.env.local
-/frontend/.next/
+frontend/.env
+frontend/.next/
+/frontend/.env.vercel
+/apotik.sql
