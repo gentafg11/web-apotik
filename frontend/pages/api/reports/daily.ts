@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     select: { amount: true },
   });
 
-  const totalSales = sales.reduce((sum, s) => sum + Number(s.total), 0);
+  const totalSales = sales.reduce((sum, s) => sum + Number(s.totalAmount), 0);
   const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
 
   return res.status(200).json({
