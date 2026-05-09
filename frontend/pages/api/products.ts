@@ -14,7 +14,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (authResult.user.role !== 'ADMIN') return res.status(403).json({ message: 'Forbidden' });
 
   if (req.method === 'POST') {
-    const { name, price, imageUrl, sku, cost, stock } = req.body;
+    const body = req.body;
+    // Accept common alias: name/productName, sku/code/productCode
+    const name = body.name || body.productName;
+    const sku = body.sku || body.code || body.productCode;
+    const price = body.price;
+    const cost = body.cost;
+    const stock = body.stock;
+    const imageUrl = body.imageUrl || body.imageUrl;
+
     if (!name || price === undefined || !sku || cost === undefined || stock === undefined) {
       return res.status(400).json({ message: 'Missing required fields: name, price, sku, cost, stock' });
     }
