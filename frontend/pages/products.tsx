@@ -79,26 +79,23 @@ export default function ProductsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append('name', name);
-      formData.append('sku', sku);
-      formData.append('price', price);
-      formData.append('cost', cost);
-      formData.append('stock', stock);
-      if (imageFile) {
-        formData.append('image', imageFile);
-      }
+    const payload = {
+      name,
+      sku,
+      price: Number(price),
+      cost: Number(cost),
+      stock: Number(stock),
+    };
 
-      let res;
-      if (editingId !== null) {
-        res = await axios.put(`/api/products/${editingId}`, formData);
-        setProducts(products.map(p => p.id === editingId ? res.data : p));
-        setEditingId(null);
-      } else {
-        res = await axios.post('/api/products', formData);
-        setProducts([res.data, ...products]);
-      }
+    let res;
+    if (editingId !== null) {
+      res = await axios.put(`/api/products/${editingId}`, payload);
+      setProducts(products.map(p => p.id === editingId ? res.data : p));
+      setEditingId(null);
+    } else {
+      res = await axios.post('/api/products', payload);
+      setProducts([res.data, ...products]);
+    }
       // Reset form
       setName(''); setSku(''); setPrice(''); setCost(''); setStock('');
       setImageFile(null);
