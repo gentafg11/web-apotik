@@ -41,8 +41,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-function parseForm(req: NextApiRequest): Promise<formidable.Fields & { files: formidable.Files }> {
-  return new Promise((resolve, reject) => {
+function parseForm(req: NextApiRequest) {
+  return new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
     const form = formidable({
       maxFileSize: 5 * 1024 * 1024, // 5MB limit
     });
