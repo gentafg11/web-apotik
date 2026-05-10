@@ -224,6 +224,7 @@ export default function ProductsPage() {
           <TableHead>
             <TableRow>
               <TableHeader>ID</TableHeader>
+              <TableHeader>Image</TableHeader>
               <TableHeader>Name</TableHeader>
               <TableHeader>SKU</TableHeader>
               <TableHeader>Price</TableHeader>
@@ -234,7 +235,7 @@ export default function ProductsPage() {
           </TableHead>
           {products.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center text-gray-500 py-8">
+              <TableCell colSpan={8} className="text-center text-gray-500 py-8">
                 No products found.
               </TableCell>
             </TableRow>
@@ -242,7 +243,15 @@ export default function ProductsPage() {
             products.map(p => (
               <TableRow key={p.id}>
                 <TableCell>{p.id}</TableCell>
-                <TableCell className="font-medium">{p.name}</TableCell>
+                <TableCell>
+                  {p.imageUrl && (
+                    <img
+                      src={p.imageUrl}
+                      alt={p.name}
+                      className="h-12 w-12 object-cover rounded"
+                    />
+                  )}
+                </TableCell>
                 <TableCell>{p.sku}</TableCell>
                 <TableCell>Rp {Number(p.price).toLocaleString()}</TableCell>
                 <TableCell>{p.stock}</TableCell>
