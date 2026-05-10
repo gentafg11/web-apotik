@@ -80,13 +80,26 @@ export default function ProductsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const payload = {
+      let imageUrl = existingImage || null;
+
+      // Upload image to Vercel Blob if a file is selected
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('file', imageFile);
+        const uploadRes = await axios.post('/api/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        imageUrl = uploadRes.data.url;
+      }
+
+      const payload: any = {
         name,
         sku,
         price: Number(price),
         cost: Number(cost),
         stock: Number(stock),
       };
+      if (imageUrl) payload.imageUrl = imageUrl;
 
       let res;
       if (editingId !== null) {
