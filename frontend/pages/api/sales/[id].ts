@@ -6,10 +6,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { id } = req.query;
   if (typeof id !== 'string') return res.status(400).json({ message: 'Invalid sale id' });
 
-  // Only admin can update/delete
+  if (req.method === 'GET') {
+    const authResult = verifyToken(req);
+    if ('error' in authResult) return res.status(401).json({ message: authResult.error });
+    const userId = authResult.user.id;
+    const role = authResult.user.role;
+
+    const where = role === 'ADMIN' ? {} : { userId };
+    const sales = await prisma.sale.findMany({
+      where,
+      include: { items: true, user: { select: { email: true } } },
+      orderBy: { createdAt: 'desc' },
+    });
+    return res.status(200).json(sales);
+  }
+
   const authResult = verifyToken(req);
   if ('error' in authResult) return res.status(401).json({ message: authResult.error });
-  if (authResult.user.role !== 'ADMIN') return res.status(403).json({ message: 'Forbidden' });
 
   if (req.method === 'PUT') {
     const { items, totalAmount } = req.body;
@@ -27,8 +40,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         totalAmount: finalTotal,
         items: {
           deleteMany: { saleId: Number(id) },
-          create: items.map((item: any) => ({
-            productId: Number(item.productId),
+          create: items.map((item) => ({
+            productId: item.productId,
             qty: Number(item.qty),
             price: Number(item.price),
           })),
@@ -37,7 +50,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       include: { items: true },
     });
     return res.status(200).json(result);
-  }
   }
 
   if (req.method === 'DELETE') {
