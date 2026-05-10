@@ -13,18 +13,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'PUT') {
     const { items, totalAmount } = req.body;
-    if (!items || totalAmount === undefined) {
-      return res.status(400).json({ message: 'Items and totalAmount required' });
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: 'Items required' });
     }
-
-    // Use transaction to replace items
     // Hitung totalAmount jika tidak dikirim oleh frontend
     const finalTotal = totalAmount !== undefined
       ? Number(totalAmount)
       : items.reduce((sum, item) => sum + Number(item.qty) * Number(item.price), 0);
-    });
 
+    const result = await prisma.sale.update({
+      where: { id: Number(id) },
+      data: {
+        totalAmount: finalTotal,
+        items: {
+          deleteMany: { saleId: Number(id) },
+          create: items.map((item: any) => ({
+            productId: Number(item.productId),
+            qty: Number(item.qty),
+            price: Number(item.price),
+          })),
+        },
+      },
+      include: { items: true },
+    });
     return res.status(200).json(result);
+  }
   }
 
   if (req.method === 'DELETE') {
