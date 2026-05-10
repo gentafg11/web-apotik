@@ -24,13 +24,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'POST') {
     const { items, totalAmount } = req.body;
-    if (!items || totalAmount === undefined) {
-      return res.status(400).json({ message: 'Items and totalAmount required' });
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: 'Items required' });
     }
+    // Hitung totalAmount jika tidak dikirim oleh frontend
+    const finalTotal = totalAmount !== undefined
+      ? Number(totalAmount)
+      : items.reduce((sum: number, item: any) => sum + Number(item.qty) * Number(item.price), 0);
     const sale = await prisma.sale.create({
       data: {
         userId: authResult.user.id,
-        totalAmount: Number(totalAmount),
+        totalAmount: finalTotal,
         items: {
           create: items.map((item: any) => ({
             productId: Number(item.productId),

@@ -18,23 +18,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Use transaction to replace items
-    const result = await prisma.$transaction(async (tx) => {
-      await tx.saleItem.deleteMany({ where: { saleId: Number(id) } });
-      const sale = await tx.sale.update({
-        where: { id: Number(id) },
-        data: {
-          totalAmount: Number(totalAmount),
-          items: {
-            create: items.map((item: any) => ({
-              productId: Number(item.productId),
-              qty: Number(item.qty),
-              price: Number(item.price),
-            })),
-          },
-        },
-        include: { items: true },
-      });
-      return sale;
+    // Hitung totalAmount jika tidak dikirim oleh frontend
+    const finalTotal = totalAmount !== undefined
+      ? Number(totalAmount)
+      : items.reduce((sum, item) => sum + Number(item.qty) * Number(item.price), 0);
     });
 
     return res.status(200).json(result);
