@@ -20,6 +20,7 @@ export default function Navbar() {
     { href: '/products', label: 'Products' },
     { href: '/sales', label: 'Sales' },
     { href: '/expenses', label: 'Expenses' },
+    { href: '/users', label: 'Users' },
   ];
 
   const isActive = (path: string) => router.pathname === path;
