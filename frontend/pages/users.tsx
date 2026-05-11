@@ -19,7 +19,6 @@ const UsersPage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const router = useRouter();
 
   // Fetch users on mount
   useEffect(() => {
