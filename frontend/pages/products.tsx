@@ -89,7 +89,7 @@ export default function ProductsPage() {
         const uploadRes = await axios.post('/api/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        imageUrl = uploadRes.data.downloadUrl;
+        imageUrl = uploadRes.data.url;
       }
 
       const payload: any = {

@@ -28,13 +28,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const filename = `${Date.now()}-${file.originalFilename}`;
     const blob = await put(filename, buffer, {
       contentType: file.mimetype || 'image/jpeg',
-      access: 'private',
+      access: 'public',
     });
 
     // Clean up temp file
     fs.unlinkSync(filepath);
 
-    return res.status(200).json({ url: blob.url, downloadUrl: blob.downloadUrl });
+    return res.status(200).json({ url: blob.url });
   } catch (error: any) {
     console.error('Upload error:', error);
     return res.status(500).json({ message: 'Upload failed', error: error.message });
