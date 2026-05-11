@@ -255,8 +255,8 @@ export default function ProductsPage() {
           ) : (
             products.map(p => (
               <TableRow key={p.id}>
-                <TableCell>{p.id}</TableCell>
-                <TableCell>
+                <TableCell className="w-12">{p.id}</TableCell>
+                <TableCell className="w-20">
                   {p.imageUrl && (
                     <img
                       src={p.imageUrl}
@@ -265,7 +265,8 @@ export default function ProductsPage() {
                     />
                   )}
                 </TableCell>
-                <TableCell>{p.sku}</TableCell>
+                <TableCell className="font-medium">{p.name}</TableCell>
+                <TableCell className="text-gray-500">{p.sku}</TableCell>
                 <TableCell>Rp {Number(p.price).toLocaleString()}</TableCell>
                 <TableCell>{p.stock}</TableCell>
                 <TableCell>
@@ -273,7 +274,7 @@ export default function ProductsPage() {
                     {p.stock < 10 ? 'Low Stock' : 'In Stock'}
                   </Badge>
                 </TableCell>
-                <TableCell className="space-x-2">
+                <TableCell className="space-x-2 whitespace-nowrap">
                   <Button size="sm" variant="ghost" onClick={() => startEdit(p)}>Edit</Button>
                   <Button size="sm" variant="danger" onClick={() => handleDelete(p.id)}>Delete</Button>
                 </TableCell>
