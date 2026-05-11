@@ -35,7 +35,7 @@ const UsersPage = () => {
       }
     };
     fetchUsers();
-  }, [router]);
+  }, []);
 
   // Delete handler
   const handleDelete = async (id: number) => {
