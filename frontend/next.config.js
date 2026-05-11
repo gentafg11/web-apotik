@@ -8,9 +8,28 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/:path*',
-        destination: 'http://localhost:5001/api/:path*',
-
+        source: '/api/auth/:path*',
+        destination: 'http://localhost:5001/api/auth/:path*',
+      },
+      {
+        source: '/api/expense/:path*',
+        destination: 'http://localhost:5001/api/expense/:path*',
+      },
+      {
+        source: '/api/report/:path*',
+        destination: 'http://localhost:5001/api/report/:path*',
+      },
+      {
+        source: '/api/sale/:path*',
+        destination: 'http://localhost:5001/api/sale/:path*',
+      },
+      {
+        source: '/api/user/:path*',
+        destination: 'http://localhost:5001/api/user/:path*',
+      },
+      {
+        source: '/api/upload', // Only upload API to backend
+        destination: 'http://localhost:5001/api/upload',
       },
     ];
   },
