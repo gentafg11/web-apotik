@@ -275,8 +275,8 @@ export default function ProductsPage() {
                   </Badge>
                 </TableCell>
                 <TableCell className="space-x-2 whitespace-nowrap">
-                  <Button size="sm" variant="ghost" onClick={() => startEdit(p)}>Edit</Button>
-                  <Button size="sm" variant="danger" onClick={() => handleDelete(p.id)}>Delete</Button>
+                  <Button size="sm" variant="ghost" type="button" onClick={(e) => { e.stopPropagation(); startEdit(p); }}>Edit</Button>
+                  <Button size="sm" variant="danger" type="button" onClick={(e) => { e.stopPropagation(); handleDelete(p.id); }}>Delete</Button>
                 </TableCell>
               </TableRow>
             ))
