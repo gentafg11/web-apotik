@@ -1,6 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/router';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -8,6 +7,7 @@ import Badge from '../components/ui/Badge';
 import { Table, TableHead, TableRow, TableHeader, TableCell } from '../components/ui/Table';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import StatCard from '../components/ui/StatCard';
+import withAuth from '../components/withAuth';
 
 interface Product {
   id: number;
@@ -19,11 +19,10 @@ interface Product {
   imageUrl?: string;
 }
 
-export default function ProductsPage() {
+export function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const router = useRouter();
 
   // Fetch products on mount
   useEffect(() => {
@@ -286,3 +285,5 @@ export default function ProductsPage() {
     </div>
   );
 }
+
+export default withAuth(ProductsPage);

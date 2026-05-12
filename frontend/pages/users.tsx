@@ -203,4 +203,4 @@ const UsersPage = () => {
   );
 };
 
-export default withAuth(UsersPage, { requireAdmin: true });
+export default withAuth(UsersPage, true);

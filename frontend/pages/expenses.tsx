@@ -7,6 +7,7 @@ import Badge from '../components/ui/Badge';
 import { Table, TableHead, TableRow, TableHeader, TableCell } from '../components/ui/Table';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import StatCard from '../components/ui/StatCard';
+import withAuth from '../components/withAuth';
 
 interface Expense {
   id: number;
@@ -15,7 +16,7 @@ interface Expense {
   createdAt: string;
 }
 
-export default function ExpensesPage() {
+export function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -183,3 +184,5 @@ export default function ExpensesPage() {
     </div>
   );
 }
+
+export default withAuth(ExpensesPage);

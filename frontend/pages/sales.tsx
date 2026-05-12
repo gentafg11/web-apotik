@@ -1,6 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/router';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -9,6 +8,7 @@ import { Table, TableHead, TableRow, TableHeader, TableCell } from '../component
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import StatCard from '../components/ui/StatCard';
 import Receipt from '../components/ui/Receipt';
+import withAuth from '../components/withAuth';
 
 interface SaleItem {
   id: number;
@@ -26,7 +26,7 @@ interface Sale {
   customer?: { name: string };
 }
 
-export default function SalesPage() {
+export function SalesPage() {
   const [sales, setSales] = useState<Sale[]>([]);
   const [productOptions, setProductOptions] = useState<{id:number; name:string;}[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +38,6 @@ export default function SalesPage() {
   const [editQty, setEditQty] = useState('');
   const [editPrice, setEditPrice] = useState('');
   const [printSale, setPrintSale] = useState<Sale | null>(null);
-  const router = useRouter();
 
   // Fetch sales list
   useEffect(() => {
@@ -278,3 +277,5 @@ export default function SalesPage() {
     </div>
   );
 }
+
+export default withAuth(SalesPage);
