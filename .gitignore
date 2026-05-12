@@ -8,3 +8,4 @@ frontend/.env
 frontend/.next/
 /frontend/.env.vercel
 /apotik.sql
+.claude/
