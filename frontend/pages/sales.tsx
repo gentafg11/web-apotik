@@ -121,6 +121,9 @@ export function SalesPage() {
       const res = await axios.post('/api/sales', payload);
       setSales([res.data, ...sales]);
       setProductId(''); setQty(''); setPrice('');
+
+      const productRes = await axios.get('/api/products');
+      setProductOptions(productRes.data);
     } catch (e: any) {
       alert(e.response?.data?.message || 'Create failed');
     }

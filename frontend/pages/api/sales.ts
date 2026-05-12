@@ -18,7 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json(sales);
   }
 
-  // POST requires authenticated user
   const authResult = verifyToken(req);
   if ('error' in authResult) return res.status(401).json({ message: authResult.error });
 
@@ -27,24 +26,49 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: 'Items required' });
     }
-    // Hitung totalAmount jika tidak dikirim oleh frontend
+
     const finalTotal = totalAmount !== undefined
       ? Number(totalAmount)
       : items.reduce((sum: number, item: any) => sum + Number(item.qty) * Number(item.price), 0);
-    const sale = await prisma.sale.create({
-      data: {
-        userId: authResult.user.id,
-        totalAmount: finalTotal,
-        items: {
-          create: items.map((item: any) => ({
-            productId: Number(item.productId),
-            qty: Number(item.qty),
-            price: Number(item.price),
-          })),
+
+    const sale = await prisma.$transaction(async (tx) => {
+      for (const item of items) {
+        const product = await tx.product.findUnique({
+          where: { id: Number(item.productId) },
+        });
+
+        if (!product) {
+          throw new Error(`Product ${item.productId} not found`);
+        }
+
+        if (product.stock < Number(item.qty)) {
+          throw new Error(`Insufficient stock for ${product.name}. Available: ${product.stock}`);
+        }
+
+        await tx.product.update({
+          where: { id: Number(item.productId) },
+          data: { stock: { decrement: Number(item.qty) } },
+        });
+      }
+
+      const newSale = await tx.sale.create({
+        data: {
+          userId: authResult.user.id,
+          totalAmount: finalTotal,
+          items: {
+            create: items.map((item: any) => ({
+              productId: Number(item.productId),
+              qty: Number(item.qty),
+              price: Number(item.price),
+            })),
+          },
         },
-      },
-      include: { items: true },
+        include: { items: true },
+      });
+
+      return newSale;
     });
+
     return res.status(201).json(sale);
   }
 
