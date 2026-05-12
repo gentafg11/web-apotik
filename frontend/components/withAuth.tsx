@@ -23,7 +23,9 @@ export default function withAuth<P extends object>(WrappedComponent: React.Compo
 
           if (!res.ok) throw new Error('Unauthorized');
 
-          if (requireAdmin && res.headers.get('role') !== 'ADMIN') {
+          const data = await res.json();
+
+          if (requireAdmin && data.role !== 'ADMIN') {
             router.replace('/dashboard');
             return;
           }
