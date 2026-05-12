@@ -1,0 +1,61 @@
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { verifyToken } from '../../../lib/auth';
+import { prisma } from '../../../lib/prisma';
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { id } = req.query;
+  if (typeof id !== 'string') return res.status(400).json({ message: 'Invalid sale id' });
+
+  if (req.method === 'GET') {
+    const authResult = verifyToken(req);
+    if ('error' in authResult) return res.status(401).json({ message: authResult.error });
+    const userId = authResult.user.id;
+    const role = authResult.user.role;
+
+    const where = role === 'ADMIN' ? {} : { userId };
+    const sales = await prisma.sale.findMany({
+      where,
+      include: { items: true, user: { select: { email: true } } },
+      orderBy: { createdAt: 'desc' },
+    });
+    return res.status(200).json(sales);
+  }
+
+  const authResult = verifyToken(req);
+  if ('error' in authResult) return res.status(401).json({ message: authResult.error });
+
+  if (req.method === 'PUT') {
+    const { items, totalAmount } = req.body;
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: 'Items required' });
+    }
+    // Hitung totalAmount jika tidak dikirim oleh frontend
+    const finalTotal = totalAmount !== undefined
+      ? Number(totalAmount)
+      : items.reduce((sum, item) => sum + Number(item.qty) * Number(item.price), 0);
+
+    const result = await prisma.sale.update({
+      where: { id: Number(id) },
+      data: {
+        totalAmount: finalTotal,
+        items: {
+          deleteMany: { saleId: Number(id) },
+          create: items.map((item) => ({
+            productId: item.productId,
+            qty: Number(item.qty),
+            price: Number(item.price),
+          })),
+        },
+      },
+      include: { items: true },
+    });
+    return res.status(200).json(result);
+  }
+
+  if (req.method === 'DELETE') {
+    await prisma.sale.delete({ where: { id: Number(id) } });
+    return res.status(204).send(null);
+  }
+
+  res.status(405).json({ message: 'Method not allowed' });
+}

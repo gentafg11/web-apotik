@@ -1,27 +1,43 @@
 interface StatCardProps {
   title: string;
   value: number | string;
-  icon: string;
+  change?: number;
+  icon: React.ReactNode;
   variant?: 'default' | 'success' | 'warning' | 'danger' | 'info';
 }
 
-const variants = {
-  default: 'bg-blue-50 border-blue-100 text-blue-600',
-  success: 'bg-green-50 border-green-100 text-green-600',
-  warning: 'bg-yellow-50 border-yellow-100 text-yellow-600',
-  danger: 'bg-red-50 border-red-100 text-red-600',
-  info: 'bg-purple-50 border-purple-100 text-purple-600',
+const variantToColor: Record<string, keyof typeof colors> = {
+  default: 'blue',
+  success: 'green',
+  warning: 'yellow',
+  danger: 'red',
+  info: 'purple',
 };
 
-export default function StatCard({ title, value, icon, variant = 'default' }: StatCardProps) {
+const colors = {
+  blue: { bg: 'bg-blue-50', border: 'border-blue-100', text: 'text-blue-600', iconBg: 'bg-blue-100' },
+  green: { bg: 'bg-green-50', border: 'border-green-100', text: 'text-green-600', iconBg: 'bg-green-100' },
+  yellow: { bg: 'bg-yellow-50', border: 'border-yellow-100', text: 'text-yellow-600', iconBg: 'bg-yellow-100' },
+  red: { bg: 'bg-red-50', border: 'border-red-100', text: 'text-red-600', iconBg: 'bg-red-100' },
+  purple: { bg: 'bg-purple-50', border: 'border-purple-100', text: 'text-purple-600', iconBg: 'bg-purple-100' },
+};
+
+export default function StatCard({ title, value, change, icon, variant = 'default' }: StatCardProps) {
+  const colorKey = variantToColor[variant];
+  const c = colors[colorKey];
   return (
-    <div className={`${variants[variant]} border rounded-xl p-5 shadow-soft`}>
+    <div className={`${c.bg} border ${c.border} rounded-2xl p-6 shadow-soft hover:shadow-lg transition-all duration-300`}>
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+          <p className="text-3xl font-bold text-gray-900 mt-1">{value}</p>
+          {change !== undefined && (
+            <p className={`text-sm mt-1 ${change >= 0 ? c.text : 'text-red-600'}`}>
+              {change >= 0 ? '+' : ''}{change}% dari bulan lalu
+            </p>
+          )}
         </div>
-        <div className="text-3xl">{icon}</div>
+        <div className={`${c.iconBg} p-4 rounded-xl ${c.text}`}>{icon}</div>
       </div>
     </div>
   );
