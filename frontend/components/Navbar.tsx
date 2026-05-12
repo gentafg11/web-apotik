@@ -1,21 +1,23 @@
 'use client';
 
+import { createContext, useContext, useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import axios from 'axios';
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
 
-export default function Navbar() {
-  const [open, setOpen] = useState(false);
+interface AuthContextType {
+  isAuthenticated: boolean;
+  logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextType>({ isAuthenticated: false, logout: () => {} });
+
+export const useAuth = () => useContext(AuthContext);
+
+function NavbarInner() {
   const router = useRouter();
-
-  const handleLogout = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      delete axios.defaults.headers.common['Authorization'];
-    }
-    router.replace('/login');
-  };
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const { logout } = useAuth();
 
   const navLinks = [
     { href: '/dashboard', label: 'Dashboard' },
@@ -25,24 +27,26 @@ export default function Navbar() {
     { href: '/users', label: 'Users' },
   ];
 
-  const isActive = (path: string) => router.pathname === path;
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
+    router.replace('/login');
+  };
+
+  const isActive = (path: string) => pathname === path;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/dashboard" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">
-              A
-            </div>
+          <a href="/dashboard" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">A</div>
             <span className="text-xl font-bold text-gray-800 tracking-tight">Apotik</span>
-          </Link>
+          </a>
 
-          {/* Desktop menu */}
           <div className="hidden md:flex items-center space-x-1">
             {navLinks.map(link => (
-              <Link
+              <a
                 key={link.href}
                 href={link.href}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
@@ -52,7 +56,7 @@ export default function Navbar() {
                 }`}
               >
                 {link.label}
-              </Link>
+              </a>
             ))}
             <button
               onClick={handleLogout}
@@ -62,7 +66,6 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Hamburger for mobile */}
           <button
             className="md:hidden p-2 text-gray-600 focus:outline-none"
             onClick={() => setOpen(!open)}
@@ -74,22 +77,19 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile menu */}
         {open && (
           <div className="md:hidden py-4 space-y-2 border-t border-gray-200/50">
             {navLinks.map(link => (
-              <Link
+              <a
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
                 className={`block px-4 py-3 rounded-xl text-base font-medium ${
-                  isActive(link.href)
-                    ? 'bg-indigo-600 text-white'
-                    : 'text-gray-700 hover:bg-white/60'
+                  isActive(link.href) ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-white/60'
                 }`}
               >
                 {link.label}
-              </Link>
+              </a>
             ))}
             <button
               onClick={() => { setOpen(false); handleLogout(); }}
@@ -102,4 +102,8 @@ export default function Navbar() {
       </div>
     </nav>
   );
+}
+
+export default function Navbar() {
+  return <NavbarInner />;
 }

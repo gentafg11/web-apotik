@@ -1,9 +1,7 @@
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
 import AuthProvider from './components/AuthProvider';
-import dynamic from 'next/dynamic';
-
-const Navbar = dynamic(() => import('@/components/Navbar'), { ssr: false });
+import NavbarWrapper from './components/NavbarWrapper';
 
 export const metadata: Metadata = {
   title: 'Apotik App',
@@ -25,7 +23,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen">
         <AuthProvider>
-          <Navbar />
+          <NavbarWrapper />
           <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 pt-16">
             {children}
           </main>
