@@ -155,13 +155,13 @@ export function ProductsPage() {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800">Products</h1>
+      <h1 className="text-3xl font-bold text-gray-800">Produk</h1>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard title="Total Products" value={totalProducts} icon="📦" />
-        <StatCard title="Low Stock" value={lowStockCount} icon="⚠️" variant={lowStockCount > 0 ? 'warning' : 'default'} />
-        <StatCard title="Total Value" value={`Rp ${totalValue.toLocaleString()}`} icon="💰" variant="success" />
+        <StatCard title="Total Produk" value={totalProducts} icon="📦" />
+        <StatCard title="Stok Rendah" value={lowStockCount} icon="⚠️" variant={lowStockCount > 0 ? 'warning' : 'default'} />
+        <StatCard title="Total Nilai" value={`Rp ${totalValue.toLocaleString()}`} icon="💰" variant="success" />
       </div>
 
       {error && (
@@ -171,25 +171,25 @@ export function ProductsPage() {
       )}
 
       {/* Product Form */}
-      <Card title={editingId !== null ? 'Edit Product' : 'Add Product'} className="shadow-lg">
+      <Card title={editingId !== null ? 'Edit Produk' : 'Tambah Produk'} className="shadow-lg">
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <Input
-              label="Product Name"
+              label="Nama Produk"
               value={name}
               onChange={e => setName(e.target.value)}
-              placeholder="Enter product name"
+              placeholder="Masukkan nama produk"
               required
             />
             <Input
               label="SKU"
               value={sku}
               onChange={e => setSku(e.target.value)}
-              placeholder="e.g. PRD-001"
+              placeholder="contoh: PRD-001"
               required
             />
             <Input
-              label="Price (Rp)"
+              label="Harga Jual (Rp)"
               type="number"
               value={price}
               onChange={e => setPrice(e.target.value)}
@@ -197,7 +197,7 @@ export function ProductsPage() {
               required
             />
             <Input
-              label="Cost (Rp)"
+              label="Harga Beli (Rp)"
               type="number"
               value={cost}
               onChange={e => setCost(e.target.value)}
@@ -205,7 +205,7 @@ export function ProductsPage() {
               required
             />
             <Input
-              label="Stock"
+              label="Stok"
               type="number"
               value={stock}
               onChange={e => setStock(e.target.value)}
@@ -213,7 +213,7 @@ export function ProductsPage() {
               required
             />
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Gambar Produk</label>
               <input
                 type="file"
                 accept="image/*"
@@ -233,11 +233,11 @@ export function ProductsPage() {
           </div>
           <div className="flex space-x-2">
             <Button type="submit" variant="primary">
-              {editingId !== null ? 'Update Product' : 'Add Product'}
+              {editingId !== null ? 'Update Produk' : 'Tambah Produk'}
             </Button>
             {editingId !== null && (
               <Button type="button" variant="secondary" onClick={() => { setEditingId(null); setName(''); setSku(''); setPrice(''); setCost(''); setStock(''); setImageFile(null); setImagePreview(null); }}>
-                Cancel
+                Batal
               </Button>
             )}
           </div>
@@ -245,7 +245,7 @@ export function ProductsPage() {
       </Card>
 
       {/* Products Table */}
-      <Card title="Product List" className="shadow-lg overflow-hidden">
+      <Card title="Daftar Produk" className="shadow-lg overflow-hidden">
         <div className="mb-4 max-w-xs">
           <SearchInput
             value={searchTerm}
@@ -258,13 +258,13 @@ export function ProductsPage() {
             <TableHead>
               <TableRow>
                 <TableHeader>ID</TableHeader>
-                <TableHeader>Image</TableHeader>
-                <TableHeader>Name</TableHeader>
+                <TableHeader>Gambar</TableHeader>
+                <TableHeader>Nama</TableHeader>
                 <TableHeader>SKU</TableHeader>
-                <TableHeader>Price</TableHeader>
-                <TableHeader>Stock</TableHeader>
+                <TableHeader>Harga</TableHeader>
+                <TableHeader>Stok</TableHeader>
                 <TableHeader>Status</TableHeader>
-                <TableHeader>Actions</TableHeader>
+                <TableHeader>Aksi</TableHeader>
               </TableRow>
             </TableHead>
             {filteredProducts.length === 0 ? (
@@ -292,12 +292,12 @@ export function ProductsPage() {
                 <TableCell>{p.stock}</TableCell>
                 <TableCell>
                   <Badge variant={p.stock < 10 ? 'danger' : 'success'}>
-                    {p.stock < 10 ? 'Low Stock' : 'In Stock'}
+                    {p.stock < 10 ? 'Stok Rendah' : 'Tersedia'}
                   </Badge>
                 </TableCell>
                 <TableCell className="space-x-2 whitespace-nowrap">
                   <Button size="sm" variant="ghost" type="button" onClick={(e) => { e.stopPropagation(); startEdit(p); }}>Edit</Button>
-                  <Button size="sm" variant="danger" type="button" onClick={(e) => { e.stopPropagation(); setDeleteConfirm(p.id); }}>Delete</Button>
+                  <Button size="sm" variant="danger" type="button" onClick={(e) => { e.stopPropagation(); setDeleteConfirm(p.id); }}>Hapus</Button>
                 </TableCell>
               </TableRow>
             ))

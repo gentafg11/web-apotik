@@ -109,13 +109,13 @@ export function ExpensesPage() {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800">Expenses</h1>
+      <h1 className="text-3xl font-bold text-gray-800">Pengeluaran</h1>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard title="Total Expenses" value={totalExpenses} icon="📤" />
-        <StatCard title="Total Amount" value={`Rp ${totalAmount.toLocaleString()}`} icon="💸" variant="danger" />
-        <StatCard title="Average Expense" value={`Rp ${avgAmount.toLocaleString(undefined, {maximumFractionDigits:0})}`} icon="📉" />
+        <StatCard title="Total Pengeluaran" value={totalExpenses} icon="📤" />
+        <StatCard title="Jumlah Total" value={`Rp ${totalAmount.toLocaleString()}`} icon="💸" variant="danger" />
+        <StatCard title="Rata-rata" value={`Rp ${avgAmount.toLocaleString(undefined, {maximumFractionDigits:0})}`} icon="📉" />
       </div>
 
       {error && (
@@ -125,18 +125,18 @@ export function ExpensesPage() {
       )}
 
       {/* Expense Form */}
-      <Card title={editingId !== null ? 'Edit Expense' : 'Add Expense'} className="shadow-lg">
+      <Card title={editingId !== null ? 'Edit Pengeluaran' : 'Tambah Pengeluaran'} className="shadow-lg">
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <Input
-              label="Description"
+              label="Keterangan"
               value={description}
               onChange={e => setDescription(e.target.value)}
-              placeholder="What was this expense for?"
+              placeholder="Deskripsi pengeluaran"
               required
             />
             <Input
-              label="Amount (Rp)"
+              label="Jumlah (Rp)"
               type="number"
               value={amount}
               onChange={e => setAmount(e.target.value)}
@@ -147,11 +147,11 @@ export function ExpensesPage() {
           </div>
           <div className="flex space-x-2">
             <Button type="submit" variant="primary">
-              {editingId !== null ? 'Update Expense' : 'Add Expense'}
+              {editingId !== null ? 'Update Pengeluaran' : 'Tambah Pengeluaran'}
             </Button>
             {editingId !== null && (
               <Button type="button" variant="secondary" onClick={() => { setEditingId(null); setDescription(''); setAmount(''); }}>
-                Cancel
+                Batal
               </Button>
             )}
           </div>
@@ -159,7 +159,7 @@ export function ExpensesPage() {
       </Card>
 
       {/* Expenses Table */}
-      <Card title="Expense Records" className="shadow-lg overflow-hidden">
+      <Card title="Riwayat Pengeluaran" className="shadow-lg overflow-hidden">
         <div className="mb-4 max-w-xs">
           <SearchInput
             value={searchTerm}
@@ -172,10 +172,10 @@ export function ExpensesPage() {
             <TableHead>
               <TableRow>
                 <TableHeader>ID</TableHeader>
-                <TableHeader>Description</TableHeader>
-                <TableHeader>Amount</TableHeader>
-                <TableHeader>Date</TableHeader>
-                <TableHeader>Actions</TableHeader>
+                <TableHeader>Keterangan</TableHeader>
+                <TableHeader>Jumlah</TableHeader>
+                <TableHeader>Tanggal</TableHeader>
+                <TableHeader>Aksi</TableHeader>
               </TableRow>
             </TableHead>
             {filteredExpenses.length === 0 ? (
@@ -195,7 +195,7 @@ export function ExpensesPage() {
                   <TableCell>{new Date(e.createdAt).toLocaleString()}</TableCell>
                   <TableCell className="space-x-2">
                     <Button size="sm" variant="ghost" onClick={() => startEdit(e)}>Edit</Button>
-                    <Button size="sm" variant="danger" onClick={() => setDeleteConfirm(e.id)}>Delete</Button>
+                    <Button size="sm" variant="danger" onClick={() => setDeleteConfirm(e.id)}>Hapus</Button>
                   </TableCell>
                 </TableRow>
               ))

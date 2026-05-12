@@ -198,60 +198,63 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+        <p className="text-sm text-gray-500">{new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+      </div>
 
       {error && (
-        <Card className="border-l-4 border-red-500 bg-red-50 p-4">
+        <Card className="border-l-4 border-red-500 bg-red-50">
           <p className="text-red-600">{error}</p>
         </Card>
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Products" value={totalProducts} icon="📦" />
-        <StatCard title="Stock Value" value={`Rp ${totalStockValue.toLocaleString()}`} icon="💰" />
-        <StatCard title="Low Stock" value={lowStockCount} icon="⚠️" variant={lowStockCount > 0 ? 'warning' : 'default'} />
-        <StatCard title="Total Sales" value={totalSalesCount} icon="🧾" />
-        <StatCard title="Total Revenue" value={`Rp ${totalRevenue.toLocaleString()}`} icon="💵" variant="success" />
-        <StatCard title="Today's Revenue" value={`Rp ${todayRevenue.toLocaleString()}`} icon="📈" />
-        <StatCard title="Total Expenses" value={totalExpensesCount} icon="💸" variant="danger" />
-        <StatCard title="Net Profit" value={`Rp ${netProfit.toLocaleString()}`} icon={netProfit >= 0 ? '📈' : '📉'} variant={netProfit >= 0 ? 'success' : 'danger'} />
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard title="Total Produk" value={totalProducts} icon="📦" />
+        <StatCard title="Nilai Stok" value={`Rp ${totalStockValue.toLocaleString()}`} icon="💰" />
+        <StatCard title="Stok Rendah" value={lowStockCount} icon="⚠️" variant={lowStockCount > 0 ? 'warning' : 'default'} />
+        <StatCard title="Total Penjualan" value={totalSalesCount} icon="🧾" />
+        <StatCard title="Total Pendapatan" value={`Rp ${totalRevenue.toLocaleString()}`} icon="💵" variant="success" />
+        <StatCard title="Pendapatan Hari Ini" value={`Rp ${todayRevenue.toLocaleString()}`} icon="📈" />
+        <StatCard title="Total Pengeluaran" value={totalExpensesCount} icon="💸" variant="danger" />
+        <StatCard title="Keuntungan Bersih" value={`Rp ${netProfit.toLocaleString()}`} icon={netProfit >= 0 ? '📈' : '📉'} variant={netProfit >= 0 ? 'success' : 'danger'} />
       </div>
 
       {/* Reports Charts */}
-      <Card title="Reports" className="shadow-lg">
+      <Card title="Laporan">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <h3 className="text-sm font-semibold text-gray-600 mb-2 text-center">Daily</h3>
-            <Bar data={chartData('Daily', [dailyReport.sales, dailyReport.expenses, dailyReport.profit])} />
+          <div className="bg-gray-50 rounded-xl p-4">
+            <h3 className="text-sm font-semibold text-gray-600 mb-3 text-center">Harian</h3>
+            <Bar data={chartData('Harian', [dailyReport.sales, dailyReport.expenses, dailyReport.profit])} />
           </div>
-          <div>
-            <h3 className="text-sm font-semibold text-gray-600 mb-2 text-center">Weekly</h3>
-            <Bar data={chartData('Weekly', [weeklyReport.sales, weeklyReport.expenses, weeklyReport.profit])} />
+          <div className="bg-gray-50 rounded-xl p-4">
+            <h3 className="text-sm font-semibold text-gray-600 mb-3 text-center">Mingguan</h3>
+            <Bar data={chartData('Mingguan', [weeklyReport.sales, weeklyReport.expenses, weeklyReport.profit])} />
           </div>
-          <div>
-            <h3 className="text-sm font-semibold text-gray-600 mb-2 text-center">Monthly</h3>
-            <Bar data={chartData('Monthly', [monthlyReport.sales, monthlyReport.expenses, monthlyReport.profit])} />
+          <div className="bg-gray-50 rounded-xl p-4">
+            <h3 className="text-sm font-semibold text-gray-600 mb-3 text-center">Bulanan</h3>
+            <Bar data={chartData('Bulanan', [monthlyReport.sales, monthlyReport.expenses, monthlyReport.profit])} />
           </div>
         </div>
       </Card>
 
       {/* Low Stock Products */}
-      <Card title="Low Stock Products" className="shadow-lg overflow-hidden">
+      <Card title="Produk Stok Rendah">
         <Table>
           <TableHead>
             <TableRow>
               <TableHeader>ID</TableHeader>
-              <TableHeader>Name</TableHeader>
+              <TableHeader>Nama</TableHeader>
               <TableHeader>SKU</TableHeader>
-              <TableHeader>Stock</TableHeader>
-              <TableHeader>Price</TableHeader>
+              <TableHeader>Stok</TableHeader>
+              <TableHeader>Harga</TableHeader>
             </TableRow>
           </TableHead>
           {lowStockProducts.length === 0 ? (
             <TableRow>
               <TableCell colSpan={5} className="text-center text-gray-500 py-8">
-                No low stock products.
+                Tidak ada produk stok rendah.
               </TableCell>
             </TableRow>
           ) : (
@@ -259,11 +262,11 @@ export default function Dashboard() {
               <TableRow key={p.id}>
                 <TableCell>{p.id}</TableCell>
                 <TableCell className="font-medium">{p.name}</TableCell>
-                <TableCell>{p.sku}</TableCell>
+                <TableCell className="text-gray-500">{p.sku}</TableCell>
                 <TableCell>
                   <Badge variant={p.stock < 5 ? 'danger' : 'warning'}>{p.stock}</Badge>
                 </TableCell>
-                <TableCell>Rp {p.price.toLocaleString()}</TableCell>
+                <TableCell>Rp {Number(p.price).toLocaleString()}</TableCell>
               </TableRow>
             ))
           )}
@@ -271,7 +274,7 @@ export default function Dashboard() {
       </Card>
 
       {/* Recent Sales */}
-      <Card title="Recent Sales" className="shadow-lg overflow-hidden">
+      <Card title="Penjualan Terbaru">
         <Table>
           <TableHead>
             <TableRow>

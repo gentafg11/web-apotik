@@ -32,19 +32,19 @@ export const TableHead = ({ children }: { children: ReactNode }) => (
 );
 
 export const TableRow = ({ children, className = '', ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
-  <tr className={`hover:bg-gray-50 transition-colors ${className}`} {...props}>
+  <tr className={`hover:bg-gray-50/50 transition-colors ${className}`} {...props}>
     {children}
   </tr>
 );
 
 export const TableHeader = ({ children, className = '', ...props }: React.ThHTMLAttributes<HTMLTableCellElement>) => (
-  <th className={`px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider ${className}`} {...props}>
+  <th className={`px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider ${className}`} {...props}>
     {children}
   </th>
 );
 
 export const TableCell = ({ children, className = '', ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) => (
-  <td className={`px-6 py-4 whitespace-nowrap text-sm text-gray-700 ${className}`} {...props}>
+  <td className={`px-6 py-4 text-sm text-gray-700 ${className}`} {...props}>
     {children}
   </td>
 );

@@ -176,13 +176,13 @@ export function SalesPage() {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800">Sales</h1>
+      <h1 className="text-3xl font-bold text-gray-800">Penjualan</h1>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard title="Total Sales" value={totalSales} icon="🧾" />
-        <StatCard title="Revenue" value={`Rp ${totalRevenue.toLocaleString()}`} icon="💵" variant="success" />
-        <StatCard title="Avg Transaction" value={`Rp ${avgTransaction.toLocaleString(undefined, {maximumFractionDigits:0})}`} icon="📊" />
+        <StatCard title="Total Penjualan" value={totalSales} icon="🧾" />
+        <StatCard title="Total Pendapatan" value={`Rp ${totalRevenue.toLocaleString()}`} icon="💵" variant="success" />
+        <StatCard title="Rata-rata Transaksi" value={`Rp ${avgTransaction.toLocaleString(undefined, {maximumFractionDigits:0})}`} icon="📊" />
       </div>
 
       {error && (
@@ -192,25 +192,25 @@ export function SalesPage() {
       )}
 
       {/* Sale Form (Create or Edit) */}
-      <Card title={editingId !== null ? 'Edit Sale' : 'Create New Sale'} className="shadow-lg">
+      <Card title={editingId !== null ? 'Edit Penjualan' : 'Transaksi Baru'} className="shadow-lg">
         <form onSubmit={editingId !== null ? handleUpdate : handleCreate}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Product</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Produk</label>
               <select
                 value={editingId !== null ? editProductId : productId}
                 onChange={e => editingId !== null ? setEditProductId(Number(e.target.value)) : setProductId(Number(e.target.value))}
                 className="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 required
               >
-                <option value="" disabled>Select product</option>
+                <option value="" disabled>Pilih produk</option>
                 {productOptions.map(p => (
                   <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
               </select>
             </div>
             <Input
-              label="Quantity"
+              label="Jumlah"
               type="number"
               value={editingId !== null ? editQty : qty}
               onChange={e => editingId !== null ? setEditQty(e.target.value) : setQty(e.target.value)}
@@ -219,7 +219,7 @@ export function SalesPage() {
               min="1"
             />
             <Input
-              label="Price (Rp)"
+              label="Harga (Rp)"
               type="number"
               value={editingId !== null ? editPrice : price}
               onChange={e => editingId !== null ? setEditPrice(e.target.value) : setPrice(e.target.value)}
@@ -229,10 +229,10 @@ export function SalesPage() {
           </div>
           <div className="flex space-x-2">
             <Button type="submit" variant="primary">
-              {editingId !== null ? 'Update Sale' : 'Add Sale'}
+              {editingId !== null ? 'Update Penjualan' : 'Tambah Penjualan'}
             </Button>
             {editingId !== null && (
-              <Button type="button" variant="secondary" onClick={cancelEdit}>Cancel</Button>
+              <Button type="button" variant="secondary" onClick={cancelEdit}>Batal</Button>
             )}
           </div>
         </form>
@@ -247,7 +247,7 @@ export function SalesPage() {
       )}
 
       {/* Sales Table */}
-      <Card title="Sales History" className="shadow-lg overflow-hidden">
+      <Card title="Riwayat Penjualan" className="shadow-lg overflow-hidden">
         <div className="mb-4 max-w-xs">
           <SearchInput
             value={searchTerm}
@@ -260,10 +260,10 @@ export function SalesPage() {
             <TableHead>
               <TableRow>
                 <TableHeader>ID</TableHeader>
-                <TableHeader>Date</TableHeader>
-                <TableHeader>Items</TableHeader>
+                <TableHeader>Tanggal</TableHeader>
+                <TableHeader>Item</TableHeader>
                 <TableHeader>Total</TableHeader>
-                <TableHeader>Actions</TableHeader>
+                <TableHeader>Aksi</TableHeader>
               </TableRow>
             </TableHead>
             {filteredSales.length === 0 ? (
@@ -290,9 +290,9 @@ export function SalesPage() {
                     <Badge variant="success">Rp {Number(s.totalAmount).toLocaleString()}</Badge>
                   </TableCell>
                   <TableCell className="space-x-2">
-                    <Button size="sm" variant="primary" onClick={() => handlePrint(s)}>Print</Button>
+                    <Button size="sm" variant="primary" onClick={() => handlePrint(s)}>Cetak</Button>
                     <Button size="sm" variant="ghost" onClick={() => startEdit(s)}>Edit</Button>
-                    <Button size="sm" variant="danger" onClick={() => setDeleteConfirm(s.id)}>Delete</Button>
+                    <Button size="sm" variant="danger" onClick={() => setDeleteConfirm(s.id)}>Hapus</Button>
                   </TableCell>
                 </TableRow>
               ))

@@ -109,7 +109,7 @@ const UsersPage = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800">User Management</h1>
+      <h1 className="text-3xl font-bold text-gray-800">Manajemen User</h1>
 
       {error && (
         <Card className="border-l-4 border-red-500 bg-red-50 p-4">
@@ -118,7 +118,7 @@ const UsersPage = () => {
       )}
 
       {/* User Form */}
-      <Card title={editingId !== null ? 'Edit User' : 'Add New User'} className="shadow-lg">
+      <Card title={editingId !== null ? 'Edit User' : 'Tambah User Baru'} className="shadow-lg">
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
@@ -126,7 +126,7 @@ const UsersPage = () => {
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder="user@example.com"
+              placeholder="user@contoh.com"
               required
             />
             <Input
@@ -146,14 +146,14 @@ const UsersPage = () => {
                 required
               >
                 <option value="USER">User</option>
-                <option value="CASHIER">Cashier</option>
+                <option value="CASHIER">Kasir</option>
                 <option value="ADMIN">Admin</option>
               </select>
             </div>
           </div>
           <div className="flex space-x-2 mt-4">
             <Button type="submit" variant="primary">
-              {editingId !== null ? 'Update User' : 'Add User'}
+              {editingId !== null ? 'Update User' : 'Tambah User'}
             </Button>
             {editingId !== null && (
               <Button type="button" variant="secondary" onClick={() => {
@@ -162,7 +162,7 @@ const UsersPage = () => {
                 setPassword('');
                 setRole('USER');
               }}>
-                Cancel
+                Batal
               </Button>
             )}
           </div>
@@ -170,7 +170,7 @@ const UsersPage = () => {
       </Card>
 
       {/* Users Table */}
-      <Card title="Users List" className="shadow-lg overflow-hidden">
+      <Card title="Daftar User" className="shadow-lg overflow-hidden">
         <div className="mb-4 max-w-xs">
           <SearchInput
             value={searchTerm}
@@ -185,8 +185,8 @@ const UsersPage = () => {
                 <TableHeader>ID</TableHeader>
                 <TableHeader>Email</TableHeader>
                 <TableHeader>Role</TableHeader>
-                <TableHeader>Created</TableHeader>
-                <TableHeader>Actions</TableHeader>
+                <TableHeader>Dibuat</TableHeader>
+                <TableHeader>Aksi</TableHeader>
               </TableRow>
             </TableHead>
             {filteredUsers.length === 0 ? (
@@ -213,7 +213,7 @@ const UsersPage = () => {
                       Edit
                     </Button>
                     <Button size="sm" variant="danger" type="button" onClick={(e) => { e.stopPropagation(); setDeleteConfirm(u.id); }}>
-                      Delete
+                      Hapus
                     </Button>
                   </TableCell>
                 </TableRow>
