@@ -36,6 +36,7 @@ export default function SalesPage() {
   const [editProductId, setEditProductId] = useState<number | "">('');
   const [editQty, setEditQty] = useState('');
   const [editPrice, setEditPrice] = useState('');
+  const [printSale, setPrintSale] = useState<Sale | null>(null);
   const router = useRouter();
 
   // Fetch sales list
@@ -82,6 +83,14 @@ export default function SalesPage() {
     } catch (e: any) {
       alert(e.response?.data?.message || 'Delete failed');
     }
+  };
+
+  const handlePrint = (sale: Sale) => {
+    setPrintSale(sale);
+  };
+
+  const closePrint = () => {
+    setPrintSale(null);
   };
 
   // Create form state (single item)
@@ -248,6 +257,7 @@ export default function SalesPage() {
                   <Badge variant="success">Rp {Number(s.totalAmount).toLocaleString()}</Badge>
                 </TableCell>
                 <TableCell className="space-x-2">
+                  <Button size="sm" variant="primary" onClick={() => handlePrint(s)}>Print</Button>
                   <Button size="sm" variant="ghost" onClick={() => startEdit(s)}>Edit</Button>
                   <Button size="sm" variant="danger" onClick={() => handleDelete(s.id)}>Delete</Button>
                 </TableCell>

@@ -70,6 +70,9 @@ export default function ProductsPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+  // Determine existing image for edit preview
+  const existingImage = editingId ? products.find(p => p.id === editingId)?.imageUrl : null;
+
   // Clean up preview URL
   useEffect(() => {
     if (imagePreview) {
@@ -128,9 +131,6 @@ export default function ProductsPage() {
     setImageFile(null);
     setImagePreview(null);
   };
-
-  // Determine existing image for edit preview
-  const existingImage = editingId ? products.find(p => p.id === editingId)?.imageUrl : null;
 
   if (loading) {
     return (
