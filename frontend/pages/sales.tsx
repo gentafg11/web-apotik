@@ -8,6 +8,7 @@ import Badge from '../components/ui/Badge';
 import { Table, TableHead, TableRow, TableHeader, TableCell } from '../components/ui/Table';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import StatCard from '../components/ui/StatCard';
+import Receipt from '../components/ui/Receipt';
 
 interface SaleItem {
   id: number;
@@ -220,6 +221,14 @@ export default function SalesPage() {
           </div>
         </form>
       </Card>
+
+      {printSale && (
+        <Receipt
+          sale={printSale}
+          onClose={closePrint}
+          getProductName={getProductName}
+        />
+      )}
 
       {/* Sales Table */}
       <Card title="Sales History" className="shadow-lg overflow-hidden">
