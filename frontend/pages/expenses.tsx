@@ -4,7 +4,9 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
-import { Table, TableHead, TableRow, TableHeader, TableCell } from '../components/ui/Table';
+import SearchInput from '../components/ui/SearchInput';
+import ConfirmModal from '../components/ui/ConfirmModal';
+import { TableWrapper, Table, TableHead, TableRow, TableHeader, TableCell } from '../components/ui/Table';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import StatCard from '../components/ui/StatCard';
 import withAuth from '../components/withAuth';
@@ -20,6 +22,8 @@ export function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
 
   // Fetch list
   useEffect(() => {
@@ -45,12 +49,21 @@ export function ExpensesPage() {
   );
   const avgAmount = totalExpenses > 0 ? totalAmount / totalExpenses : 0;
 
+  // Filtered expenses
+  const filteredExpenses = useMemo(() => {
+    if (!searchTerm) return expenses;
+    const term = searchTerm.toLowerCase();
+    return expenses.filter(e =>
+      e.description.toLowerCase().includes(term)
+    );
+  }, [expenses, searchTerm]);
+
   // Delete handler
   const handleDelete = async (id: number) => {
-    if (!confirm('Delete this expense?')) return;
     try {
       await axios.delete(`/api/expenses/${id}`);
       setExpenses(expenses.filter(e => e.id !== id));
+      setDeleteConfirm(null);
     } catch (e: any) {
       alert(e.response?.data?.message || 'Delete failed');
     }
@@ -147,40 +160,57 @@ export function ExpensesPage() {
 
       {/* Expenses Table */}
       <Card title="Expense Records" className="shadow-lg overflow-hidden">
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeader>ID</TableHeader>
-              <TableHeader>Description</TableHeader>
-              <TableHeader>Amount</TableHeader>
-              <TableHeader>Date</TableHeader>
-              <TableHeader>Actions</TableHeader>
-            </TableRow>
-          </TableHead>
-          {expenses.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={5} className="text-center text-gray-500 py-8">
-                No expenses recorded.
-              </TableCell>
-            </TableRow>
-          ) : (
-            expenses.map(e => (
-              <TableRow key={e.id}>
-                <TableCell>{e.id}</TableCell>
-                <TableCell className="font-medium">{e.description}</TableCell>
-                <TableCell>
-                  <Badge variant="danger">Rp {Number(e.amount).toLocaleString()}</Badge>
-                </TableCell>
-                <TableCell>{new Date(e.createdAt).toLocaleString()}</TableCell>
-                <TableCell className="space-x-2">
-                  <Button size="sm" variant="ghost" onClick={() => startEdit(e)}>Edit</Button>
-                  <Button size="sm" variant="danger" onClick={() => handleDelete(e.id)}>Delete</Button>
+        <div className="mb-4 max-w-xs">
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Cari pengeluaran..."
+          />
+        </div>
+        <TableWrapper>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeader>ID</TableHeader>
+                <TableHeader>Description</TableHeader>
+                <TableHeader>Amount</TableHeader>
+                <TableHeader>Date</TableHeader>
+                <TableHeader>Actions</TableHeader>
+              </TableRow>
+            </TableHead>
+            {filteredExpenses.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+                  {searchTerm ? 'Pengeluaran tidak ditemukan.' : 'Belum ada pengeluaran.'}
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </Table>
-      </Card>
+            ) : (
+              filteredExpenses.map(e => (
+                <TableRow key={e.id}>
+                  <TableCell>{e.id}</TableCell>
+                  <TableCell className="font-medium">{e.description}</TableCell>
+                  <TableCell>
+                    <Badge variant="danger">Rp {Number(e.amount).toLocaleString()}</Badge>
+                  </TableCell>
+                  <TableCell>{new Date(e.createdAt).toLocaleString()}</TableCell>
+                  <TableCell className="space-x-2">
+                    <Button size="sm" variant="ghost" onClick={() => startEdit(e)}>Edit</Button>
+                    <Button size="sm" variant="danger" onClick={() => setDeleteConfirm(e.id)}>Delete</Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </Table>
+          </TableWrapper>
+        </Card>
+
+      <ConfirmModal
+        isOpen={deleteConfirm !== null}
+        title="Hapus Pengeluaran"
+        message="Apakah Anda yakin ingin menghapus pengeluaran ini?"
+        onConfirm={() => deleteConfirm && handleDelete(deleteConfirm)}
+        onCancel={() => setDeleteConfirm(null)}
+      />
     </div>
   );
 }

@@ -4,7 +4,9 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
-import { Table, TableHead, TableRow, TableHeader, TableCell } from '../components/ui/Table';
+import SearchInput from '../components/ui/SearchInput';
+import ConfirmModal from '../components/ui/ConfirmModal';
+import { TableWrapper, Table, TableHead, TableRow, TableHeader, TableCell } from '../components/ui/Table';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import StatCard from '../components/ui/StatCard';
 import withAuth from '../components/withAuth';
@@ -23,6 +25,8 @@ export function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
 
   // Fetch products on mount
   useEffect(() => {
@@ -48,12 +52,22 @@ export function ProductsPage() {
     products.reduce((sum, p) => sum + p.price * p.stock, 0), [products]
   );
 
+  // Filtered products
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm) return products;
+    const term = searchTerm.toLowerCase();
+    return products.filter(p =>
+      p.name.toLowerCase().includes(term) ||
+      p.sku.toLowerCase().includes(term)
+    );
+  }, [products, searchTerm]);
+
   // Delete handler
   const handleDelete = async (id: number) => {
-    if (!confirm('Delete this product?')) return;
     try {
       await axios.delete(`/api/products/${id}`);
       setProducts(products.filter(p => p.id !== id));
+      setDeleteConfirm(null);
     } catch (e: any) {
       alert(e.response?.data?.message || 'Delete failed');
     }
@@ -232,27 +246,35 @@ export function ProductsPage() {
 
       {/* Products Table */}
       <Card title="Product List" className="shadow-lg overflow-hidden">
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeader>ID</TableHeader>
-              <TableHeader>Image</TableHeader>
-              <TableHeader>Name</TableHeader>
-              <TableHeader>SKU</TableHeader>
-              <TableHeader>Price</TableHeader>
-              <TableHeader>Stock</TableHeader>
-              <TableHeader>Status</TableHeader>
-              <TableHeader>Actions</TableHeader>
-            </TableRow>
-          </TableHead>
-          {products.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={8} className="text-center text-gray-500 py-8">
-                No products found.
-              </TableCell>
-            </TableRow>
-          ) : (
-            products.map(p => (
+        <div className="mb-4 max-w-xs">
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Cari produk..."
+          />
+        </div>
+        <TableWrapper>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeader>ID</TableHeader>
+                <TableHeader>Image</TableHeader>
+                <TableHeader>Name</TableHeader>
+                <TableHeader>SKU</TableHeader>
+                <TableHeader>Price</TableHeader>
+                <TableHeader>Stock</TableHeader>
+                <TableHeader>Status</TableHeader>
+                <TableHeader>Actions</TableHeader>
+              </TableRow>
+            </TableHead>
+            {filteredProducts.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center text-gray-500 py-8">
+                  {searchTerm ? 'Produk tidak ditemukan.' : 'Tidak ada produk.'}
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredProducts.map(p => (
               <TableRow key={p.id}>
                 <TableCell className="w-12">{p.id}</TableCell>
                 <TableCell className="w-20">
@@ -275,13 +297,22 @@ export function ProductsPage() {
                 </TableCell>
                 <TableCell className="space-x-2 whitespace-nowrap">
                   <Button size="sm" variant="ghost" type="button" onClick={(e) => { e.stopPropagation(); startEdit(p); }}>Edit</Button>
-                  <Button size="sm" variant="danger" type="button" onClick={(e) => { e.stopPropagation(); handleDelete(p.id); }}>Delete</Button>
+                  <Button size="sm" variant="danger" type="button" onClick={(e) => { e.stopPropagation(); setDeleteConfirm(p.id); }}>Delete</Button>
                 </TableCell>
               </TableRow>
             ))
           )}
         </Table>
+        </TableWrapper>
       </Card>
+
+      <ConfirmModal
+        isOpen={deleteConfirm !== null}
+        title="Hapus Produk"
+        message="Apakah Anda yakin ingin menghapus produk ini? Tindakan ini tidak dapat dibatalkan."
+        onConfirm={() => deleteConfirm && handleDelete(deleteConfirm)}
+        onCancel={() => setDeleteConfirm(null)}
+      />
     </div>
   );
 }

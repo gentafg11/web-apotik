@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
-import { Table, TableHead, TableRow, TableHeader, TableCell } from '../components/ui/Table';
+import SearchInput from '../components/ui/SearchInput';
+import ConfirmModal from '../components/ui/ConfirmModal';
+import { TableWrapper, Table, TableHead, TableRow, TableHeader, TableCell } from '../components/ui/Table';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import withAuth from '../components/withAuth';
 
@@ -19,6 +21,8 @@ const UsersPage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
 
   // Fetch users on mount
   useEffect(() => {
@@ -37,12 +41,22 @@ const UsersPage = () => {
     fetchUsers();
   }, []);
 
+  // Filtered users
+  const filteredUsers = useMemo(() => {
+    if (!searchTerm) return users;
+    const term = searchTerm.toLowerCase();
+    return users.filter(u =>
+      u.email.toLowerCase().includes(term) ||
+      u.role.toLowerCase().includes(term)
+    );
+  }, [users, searchTerm]);
+
   // Delete handler
   const handleDelete = async (id: number) => {
-    if (!confirm('Delete this user? This action cannot be undone.')) return;
     try {
       await axios.delete(`/api/users/${id}`);
       setUsers(users.filter(u => u.id !== id));
+      setDeleteConfirm(null);
     } catch (e: any) {
       alert(e.response?.data?.message || 'Delete failed');
     }
@@ -157,48 +171,65 @@ const UsersPage = () => {
 
       {/* Users Table */}
       <Card title="Users List" className="shadow-lg overflow-hidden">
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeader>ID</TableHeader>
-              <TableHeader>Email</TableHeader>
-              <TableHeader>Role</TableHeader>
-              <TableHeader>Created</TableHeader>
-              <TableHeader>Actions</TableHeader>
-            </TableRow>
-          </TableHead>
-          {users.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={5} className="text-center text-gray-500 py-8">
-                No users found.
-              </TableCell>
-            </TableRow>
-          ) : (
-            users.map(u => (
-              <TableRow key={u.id}>
-                <TableCell className="w-12">{u.id}</TableCell>
-                <TableCell className="font-medium">{u.email}</TableCell>
-                <TableCell>
-                  <Badge variant={u.role === 'ADMIN' ? 'danger' : u.role === 'CASHIER' ? 'warning' : 'success'}>
-                    {u.role}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  {new Date(u.createdAt).toLocaleDateString('id-ID')}
-                </TableCell>
-                <TableCell className="space-x-2 whitespace-nowrap">
-                  <Button size="sm" variant="ghost" type="button" onClick={(e) => { e.stopPropagation(); startEdit(u); }}>
-                    Edit
-                  </Button>
-                  <Button size="sm" variant="danger" type="button" onClick={(e) => { e.stopPropagation(); handleDelete(u.id); }}>
-                    Delete
-                  </Button>
+        <div className="mb-4 max-w-xs">
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Cari user..."
+          />
+        </div>
+        <TableWrapper>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeader>ID</TableHeader>
+                <TableHeader>Email</TableHeader>
+                <TableHeader>Role</TableHeader>
+                <TableHeader>Created</TableHeader>
+                <TableHeader>Actions</TableHeader>
+              </TableRow>
+            </TableHead>
+            {filteredUsers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+                  {searchTerm ? 'User tidak ditemukan.' : 'Tidak ada user.'}
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </Table>
-      </Card>
+            ) : (
+              filteredUsers.map(u => (
+                <TableRow key={u.id}>
+                  <TableCell className="w-12">{u.id}</TableCell>
+                  <TableCell className="font-medium">{u.email}</TableCell>
+                  <TableCell>
+                    <Badge variant={u.role === 'ADMIN' ? 'danger' : u.role === 'CASHIER' ? 'warning' : 'success'}>
+                      {u.role}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {new Date(u.createdAt).toLocaleDateString('id-ID')}
+                  </TableCell>
+                  <TableCell className="space-x-2 whitespace-nowrap">
+                    <Button size="sm" variant="ghost" type="button" onClick={(e) => { e.stopPropagation(); startEdit(u); }}>
+                      Edit
+                    </Button>
+                    <Button size="sm" variant="danger" type="button" onClick={(e) => { e.stopPropagation(); setDeleteConfirm(u.id); }}>
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </Table>
+          </TableWrapper>
+        </Card>
+
+      <ConfirmModal
+        isOpen={deleteConfirm !== null}
+        title="Hapus User"
+        message="Apakah Anda yakin ingin menghapus user ini?"
+        onConfirm={() => deleteConfirm && handleDelete(deleteConfirm)}
+        onCancel={() => setDeleteConfirm(null)}
+      />
     </div>
   );
 };

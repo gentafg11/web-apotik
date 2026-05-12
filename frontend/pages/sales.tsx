@@ -4,7 +4,9 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
-import { Table, TableHead, TableRow, TableHeader, TableCell } from '../components/ui/Table';
+import SearchInput from '../components/ui/SearchInput';
+import ConfirmModal from '../components/ui/ConfirmModal';
+import { TableWrapper, Table, TableHead, TableRow, TableHeader, TableCell } from '../components/ui/Table';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import StatCard from '../components/ui/StatCard';
 import Receipt from '../components/ui/Receipt';
@@ -31,6 +33,8 @@ export function SalesPage() {
   const [productOptions, setProductOptions] = useState<{id:number; name:string;}[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
 
   // Edit state
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -74,12 +78,22 @@ export function SalesPage() {
   );
   const avgTransaction = totalSales > 0 ? totalRevenue / totalSales : 0;
 
+  // Filtered sales
+  const filteredSales = useMemo(() => {
+    if (!searchTerm) return sales;
+    const term = searchTerm.toLowerCase();
+    return sales.filter(s =>
+      s.id.toString().includes(term) ||
+      new Date(s.createdAt).toLocaleString().toLowerCase().includes(term)
+    );
+  }, [sales, searchTerm]);
+
   // Delete handler
   const handleDelete = async (id: number) => {
-    if (!confirm('Delete this sale?')) return;
     try {
       await axios.delete(`/api/sales/${id}`);
       setSales(sales.filter(s => s.id !== id));
+      setDeleteConfirm(null);
     } catch (e: any) {
       alert(e.response?.data?.message || 'Delete failed');
     }
@@ -231,49 +245,66 @@ export function SalesPage() {
 
       {/* Sales Table */}
       <Card title="Sales History" className="shadow-lg overflow-hidden">
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeader>ID</TableHeader>
-              <TableHeader>Date</TableHeader>
-              <TableHeader>Items</TableHeader>
-              <TableHeader>Total</TableHeader>
-              <TableHeader>Actions</TableHeader>
-            </TableRow>
-          </TableHead>
-          {sales.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={5} className="text-center text-gray-500 py-8">
-                No sales recorded yet.
-              </TableCell>
-            </TableRow>
-          ) : (
-            sales.map(s => (
-              <TableRow key={s.id}>
-                <TableCell>{s.id}</TableCell>
-                <TableCell>{new Date(s.createdAt).toLocaleString()}</TableCell>
-                <TableCell>
-                  <div className="flex flex-col gap-1">
-                    {s.items.map((it, idx) => (
-                      <span key={idx} className="text-sm">
-                        {getProductName(it.productId)} × {it.qty} @ Rp {Number(it.price).toLocaleString()}
-                      </span>
-                    ))}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="success">Rp {Number(s.totalAmount).toLocaleString()}</Badge>
-                </TableCell>
-                <TableCell className="space-x-2">
-                  <Button size="sm" variant="primary" onClick={() => handlePrint(s)}>Print</Button>
-                  <Button size="sm" variant="ghost" onClick={() => startEdit(s)}>Edit</Button>
-                  <Button size="sm" variant="danger" onClick={() => handleDelete(s.id)}>Delete</Button>
+        <div className="mb-4 max-w-xs">
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Cari penjualan..."
+          />
+        </div>
+        <TableWrapper>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeader>ID</TableHeader>
+                <TableHeader>Date</TableHeader>
+                <TableHeader>Items</TableHeader>
+                <TableHeader>Total</TableHeader>
+                <TableHeader>Actions</TableHeader>
+              </TableRow>
+            </TableHead>
+            {filteredSales.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+                  {searchTerm ? 'Penjualan tidak ditemukan.' : 'Belum ada penjualan.'}
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </Table>
-      </Card>
+            ) : (
+              filteredSales.map(s => (
+                <TableRow key={s.id}>
+                  <TableCell>{s.id}</TableCell>
+                  <TableCell>{new Date(s.createdAt).toLocaleString()}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-col gap-1">
+                      {s.items.map((it, idx) => (
+                        <span key={idx} className="text-sm">
+                          {getProductName(it.productId)} × {it.qty} @ Rp {Number(it.price).toLocaleString()}
+                        </span>
+                      ))}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="success">Rp {Number(s.totalAmount).toLocaleString()}</Badge>
+                  </TableCell>
+                  <TableCell className="space-x-2">
+                    <Button size="sm" variant="primary" onClick={() => handlePrint(s)}>Print</Button>
+                    <Button size="sm" variant="ghost" onClick={() => startEdit(s)}>Edit</Button>
+                    <Button size="sm" variant="danger" onClick={() => setDeleteConfirm(s.id)}>Delete</Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </Table>
+          </TableWrapper>
+        </Card>
+
+      <ConfirmModal
+        isOpen={deleteConfirm !== null}
+        title="Hapus Penjualan"
+        message="Apakah Anda yakin ingin menghapus penjualan ini?"
+        onConfirm={() => deleteConfirm && handleDelete(deleteConfirm)}
+        onCancel={() => setDeleteConfirm(null)}
+      />
     </div>
   );
 }
