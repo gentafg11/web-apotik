@@ -1,24 +1,17 @@
-export default function Card({
-  children,
-  className = '',
-  title,
-  actions,
-  gradient = false,
-}: {
-  children: React.ReactNode;
+import { ReactNode } from 'react';
+
+interface CardProps {
+  children: ReactNode;
   className?: string;
   title?: string;
-  actions?: React.ReactNode;
-  gradient?: boolean;
-}) {
+  actions?: ReactNode;
+}
+
+export default function Card({ children, className = '', title, actions }: CardProps) {
   return (
-    <div
-      className={`bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg ${className} ${
-        gradient ? 'bg-gradient-to-br from-white to-gray-50' : ''
-      }`}
-    >
+    <div className={`bg-white rounded-xl shadow-soft border border-gray-100 overflow-hidden ${className}`}>
       {(title || actions) && (
-        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-gray-50 to-white">
+        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
           {title && <h3 className="text-lg font-semibold text-gray-800">{title}</h3>}
           {actions && <div className="flex items-center gap-2">{actions}</div>}
         </div>

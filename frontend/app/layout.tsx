@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className="min-h-screen">
         <AuthProvider>
           <NavbarWrapper />
-          <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 pt-16">
+          <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 pt-20">
             {children}
           </main>
         </AuthProvider>
