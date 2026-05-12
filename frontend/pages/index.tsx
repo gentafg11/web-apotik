@@ -81,7 +81,6 @@ export default function Dashboard() {
     fetchData();
   }, [router]);
 
-  // Stats
   const totalProducts = products.length;
   const totalStockValue = useMemo(() =>
     products.reduce((sum, p) => sum + p.price * p.stock, 0), [products]
@@ -118,7 +117,6 @@ export default function Dashboard() {
   const netProfit = totalRevenue - totalExpensesAmount;
   const todayNetProfit = todayRevenue - todayExpensesAmount;
 
-  // Reports for charts
   const dailyReport = useMemo<ReportData>(() => {
     const daySales = sales.filter(s => new Date(s.createdAt).toDateString() === todayStr)
       .reduce((sum, s) => sum + Number(s.totalAmount), 0);
@@ -147,7 +145,6 @@ export default function Dashboard() {
     return { sales: monthlySales, expenses: monthlyExpenses, profit: monthlySales - monthlyExpenses };
   }, [sales, expenses]);
 
-  // Top selling products (by quantity sold)
   const productSalesMap = useMemo(() => {
     const map = new Map<number, number>();
     sales.forEach(sale => {
@@ -173,18 +170,46 @@ export default function Dashboard() {
       .slice(0, 5);
   }, [productSalesMap, products]);
 
-  // Helper
   const getProductName = (id: number) => {
     const p = products.find(prod => prod.id === id);
     return p ? p.name : `Product ${id}`;
   };
 
-  const chartData = (label: string, data: number[]) => ({
-    labels: ['Sales', 'Expenses', 'Profit'],
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: '#94a3b8',
+        },
+        grid: {
+          color: 'rgba(148, 163, 184, 0.1)',
+        },
+      },
+      x: {
+        ticks: {
+          color: '#94a3b8',
+        },
+        grid: {
+          display: false,
+        },
+      },
+    },
+  };
+
+  const chartData = (data: number[]) => ({
+    labels: ['Penjualan', 'Pengeluaran', 'Profit'],
     datasets: [{
-      label,
       data,
       backgroundColor: ['#4f46e5', '#ef4444', '#10b981'],
+      borderRadius: 8,
     }]
   });
 
@@ -199,17 +224,16 @@ export default function Dashboard() {
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
-        <p className="text-sm text-gray-500">{new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        <h1 className="text-2xl font-bold text-theme-primary">Dashboard</h1>
+        <p className="text-sm text-theme-secondary">{new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
       </div>
 
       {error && (
-        <Card className="border-l-4 border-red-500 bg-red-50">
-          <p className="text-red-600">{error}</p>
+        <Card className="border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20">
+          <p className="text-red-600 dark:text-red-400">{error}</p>
         </Card>
       )}
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Total Produk" value={totalProducts} icon="📦" />
         <StatCard title="Nilai Stok" value={`Rp ${totalStockValue.toLocaleString()}`} icon="💰" />
@@ -221,25 +245,23 @@ export default function Dashboard() {
         <StatCard title="Keuntungan Bersih" value={`Rp ${netProfit.toLocaleString()}`} icon={netProfit >= 0 ? '📈' : '📉'} variant={netProfit >= 0 ? 'success' : 'danger'} />
       </div>
 
-      {/* Reports Charts */}
       <Card title="Laporan">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gray-50 rounded-xl p-4">
-            <h3 className="text-sm font-semibold text-gray-600 mb-3 text-center">Harian</h3>
-            <Bar data={chartData('Harian', [dailyReport.sales, dailyReport.expenses, dailyReport.profit])} />
+          <div className="bg-theme-tertiary/30 rounded-xl p-4">
+            <h3 className="text-sm font-semibold text-theme-secondary mb-3 text-center">Harian</h3>
+            <Bar data={chartData([dailyReport.sales, dailyReport.expenses, dailyReport.profit])} options={chartOptions} />
           </div>
-          <div className="bg-gray-50 rounded-xl p-4">
-            <h3 className="text-sm font-semibold text-gray-600 mb-3 text-center">Mingguan</h3>
-            <Bar data={chartData('Mingguan', [weeklyReport.sales, weeklyReport.expenses, weeklyReport.profit])} />
+          <div className="bg-theme-tertiary/30 rounded-xl p-4">
+            <h3 className="text-sm font-semibold text-theme-secondary mb-3 text-center">Mingguan</h3>
+            <Bar data={chartData([weeklyReport.sales, weeklyReport.expenses, weeklyReport.profit])} options={chartOptions} />
           </div>
-          <div className="bg-gray-50 rounded-xl p-4">
-            <h3 className="text-sm font-semibold text-gray-600 mb-3 text-center">Bulanan</h3>
-            <Bar data={chartData('Bulanan', [monthlyReport.sales, monthlyReport.expenses, monthlyReport.profit])} />
+          <div className="bg-theme-tertiary/30 rounded-xl p-4">
+            <h3 className="text-sm font-semibold text-theme-secondary mb-3 text-center">Bulanan</h3>
+            <Bar data={chartData([monthlyReport.sales, monthlyReport.expenses, monthlyReport.profit])} options={chartOptions} />
           </div>
         </div>
       </Card>
 
-      {/* Low Stock Products */}
       <Card title="Produk Stok Rendah">
         <Table>
           <TableHead>
@@ -253,7 +275,7 @@ export default function Dashboard() {
           </TableHead>
           {lowStockProducts.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+              <TableCell colSpan={5} className="text-center text-theme-secondary py-8">
                 Tidak ada produk stok rendah.
               </TableCell>
             </TableRow>
@@ -262,7 +284,7 @@ export default function Dashboard() {
               <TableRow key={p.id}>
                 <TableCell>{p.id}</TableCell>
                 <TableCell className="font-medium">{p.name}</TableCell>
-                <TableCell className="text-gray-500">{p.sku}</TableCell>
+                <TableCell className="text-theme-secondary">{p.sku}</TableCell>
                 <TableCell>
                   <Badge variant={p.stock < 5 ? 'danger' : 'warning'}>{p.stock}</Badge>
                 </TableCell>
@@ -273,21 +295,20 @@ export default function Dashboard() {
         </Table>
       </Card>
 
-      {/* Recent Sales */}
       <Card title="Penjualan Terbaru">
         <Table>
           <TableHead>
             <TableRow>
               <TableHeader>ID</TableHeader>
-              <TableHeader>Date</TableHeader>
-              <TableHeader>Items</TableHeader>
+              <TableHeader>Tanggal</TableHeader>
+              <TableHeader>Item</TableHeader>
               <TableHeader>Total</TableHeader>
             </TableRow>
           </TableHead>
           {sales.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4} className="text-center text-gray-500 py-8">
-                No sales recorded.
+              <TableCell colSpan={4} className="text-center text-theme-secondary py-8">
+                Belum ada penjualan.
               </TableCell>
             </TableRow>
           ) : (
@@ -313,21 +334,20 @@ export default function Dashboard() {
         </Table>
       </Card>
 
-      {/* Recent Expenses */}
-      <Card title="Recent Expenses" className="shadow-lg overflow-hidden">
+      <Card title="Pengeluaran Terbaru">
         <Table>
           <TableHead>
             <TableRow>
               <TableHeader>ID</TableHeader>
-              <TableHeader>Description</TableHeader>
-              <TableHeader>Amount</TableHeader>
-              <TableHeader>Date</TableHeader>
+              <TableHeader>Keterangan</TableHeader>
+              <TableHeader>Jumlah</TableHeader>
+              <TableHeader>Tanggal</TableHeader>
             </TableRow>
           </TableHead>
           {expenses.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4} className="text-center text-gray-500 py-8">
-                No expenses recorded.
+              <TableCell colSpan={4} className="text-center text-theme-secondary py-8">
+                Belum ada pengeluaran.
               </TableCell>
             </TableRow>
           ) : (
@@ -345,20 +365,19 @@ export default function Dashboard() {
         </Table>
       </Card>
 
-      {/* Top Selling Products */}
-      <Card title="Top Selling Products" className="shadow-lg overflow-hidden">
+      <Card title="Produk Terlaris">
         <Table>
           <TableHead>
             <TableRow>
               <TableHeader>Rank</TableHeader>
-              <TableHeader>Product</TableHeader>
-              <TableHeader>Total Qty Sold</TableHeader>
+              <TableHeader>Produk</TableHeader>
+              <TableHeader>Total Terjual</TableHeader>
             </TableRow>
           </TableHead>
           {topProducts.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={3} className="text-center text-gray-500 py-8">
-                No sales data yet.
+              <TableCell colSpan={3} className="text-center text-theme-secondary py-8">
+                Belum ada data penjualan.
               </TableCell>
             </TableRow>
           ) : (

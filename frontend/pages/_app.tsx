@@ -3,9 +3,9 @@ import type { AppProps } from 'next/app';
 import { useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import axios from 'axios';
+import { ThemeProvider } from '../components/ThemeContext';
 
 function MyApp({ Component, pageProps }: AppProps) {
-  // Set up axios interceptor to attach auth token from localStorage
   useEffect(() => {
     const interceptor = axios.interceptors.request.use((config) => {
       const token = localStorage.getItem('token');
@@ -15,7 +15,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       return config;
     });
 
-    // Restore axios defaults on initial load (for any direct calls before interceptor)
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -26,7 +25,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     };
   }, []);
 
-  // Load Inter font
   useEffect(() => {
     const link = document.createElement('link');
     link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap';
@@ -38,12 +36,14 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <div className="min-h-screen">
-      <Navbar />
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 pt-16">
-        <Component {...pageProps} />
-      </main>
-    </div>
+    <ThemeProvider>
+      <div className="min-h-screen bg-theme-primary transition-colors duration-300">
+        <Navbar />
+        <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 pt-16">
+          <Component {...pageProps} />
+        </main>
+      </div>
+    </ThemeProvider>
   );
 }
 
