@@ -109,7 +109,7 @@ const UsersPage = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800">Manajemen User</h1>
+      <h1 className="text-3xl font-bold text-theme-primary">Manajemen User</h1>
 
       {error && (
         <Card className="border-l-4 border-red-500 bg-red-50 p-4">
